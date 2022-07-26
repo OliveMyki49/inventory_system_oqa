@@ -1,11 +1,11 @@
 <template>
   <q-page class="bg-light-blue row justify-center items-center">
-    <div class="column">
+    <div class="col-6">
       <form @submit.prevent="actLogin">
-        <div class="row">
+        <div class="col">
           <h3 class="text-h3 text-white q-my-lg">Sign-in</h3>
         </div>
-        <div class="row">
+        <div class="col">
           <q-card square bordered class="q-pa-lg shadow-1">
             <q-card-section>
               <q-form class="q-gutter-md">
@@ -27,7 +27,7 @@
                   label="password"
                   require
                 />
-                <div class="q-my-none text-right">
+                <!-- <div class="q-my-none text-right">
                   <span class="text-blue-6 cursor-pointer">
                     forgot password
 
@@ -62,7 +62,7 @@
                       </div>
                     </q-popup-edit>
                   </span>
-                </div>
+                </div> -->
               </q-form>
             </q-card-section>
             <q-card-actions class="q-px-md">
@@ -78,14 +78,14 @@
           </q-card>
         </div>
       </form>
-      <p class="text-weight-medium text-white">
-        Note: Login is only exclusive to barangay officials
-      </p>
+      <!-- <p class="text-weight-medium text-white">Note: Sample Here</p> -->
     </div>
   </q-page>
 </template>
 
 <script>
+import { api } from "boot/axios"; //use this when you want api baseurl and axios is set in the boot
+
 export default {
   name: "LoginPage",
 
@@ -98,5 +98,40 @@ export default {
       verificationStatusStored: "",
     };
   },
+
+  methods: {
+    async actLogin() {
+      if (
+        this.loginFormData.username != "" &&
+        this.loginFormData.password != ""
+      ) {
+        const response = await api.post("login.php", {
+          d1: this.loginFormData.username,
+          d2: this.loginFormData.password,
+        });
+
+        if (response.data.login == true) {
+          setSession(response.data, this.loginFormData.username);
+          this.$router.push("/dashboard"); //redirect to user dashboard
+        } else {
+          alert(response.data.msg); //display alert message
+
+          this.loginFormData.username = ""; //clear inputs in login form
+          this.loginFormData.password = "";
+        }
+      } else {
+        alert("Fill up all inputs first");
+      }
+    },
+  },
 };
+
+function setSession(res, uname) {
+  //save user account info in session
+  //res means response data
+  sessionStorage.setItem("user_id", res.user_id);
+  sessionStorage.setItem("uname", uname);
+  sessionStorage.setItem("token", res.token);
+  sessionStorage.setItem("user_auth_id", res.user_auth_id);
+}
 </script>

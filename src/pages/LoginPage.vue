@@ -1,6 +1,6 @@
 <template>
   <q-page class="bg-light-blue row justify-center items-center">
-    <div class="col-6">
+    <div class="col-4">
       <form @submit.prevent="actLogin">
         <div class="col">
           <h3 class="text-h3 text-white q-my-lg">Sign-in</h3>

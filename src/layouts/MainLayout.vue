@@ -18,7 +18,7 @@
             color="blue"
             target="_self"
             href="/#/"
-            icon="perm_identity"
+            icon="logout"
             label="Logout"
             size="14px"
           />

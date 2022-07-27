@@ -1,9 +1,11 @@
 <template>
   <AddStockIn />
+  <DispOpeningStock />
 </template>
 
 <script>
 import AddStockIn from "components/AddStockIn.vue";
+import DispOpeningStock from "components/DispOpeningStock.vue";
 
 export default {
   name: "OpeningStock",
@@ -11,6 +13,7 @@ export default {
 
   components: {
     AddStockIn,
+    DispOpeningStock,
   },
 };
 </script>

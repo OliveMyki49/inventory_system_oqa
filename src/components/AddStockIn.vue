@@ -26,34 +26,31 @@
         </q-bar>
 
         <q-card-section class="q-pt-none">
-          <br />
           <!-- <q-form @submit.prevent="addUserAcc" class="q-gutter-md"> -->
           <q-form class="q-gutter-md">
-            <div class="q-pa-lg q-gutter-md">
+            <div class="q-pa-lg row q-gutter-md">
               <q-input
                 square
                 filled
                 clearable
-                v-model="inputData.official_id"
-                type="number"
+                v-model="inputData.item_code"
+                type="text"
                 min="0"
-                label="Barangay Official ID"
+                label="Item Code"
                 require
-                disable
               />
-              <div>
-                <q-input
-                  square
-                  filled
-                  clearable
-                  v-model="inputData.fullname"
-                  type="text"
-                  label="Full Name"
-                  require
-                />
-                <q-tooltip> Search Barangay Official </q-tooltip>
-              </div>
-
+              <q-input
+                square
+                filled
+                clearable
+                v-model="inputData.item_name"
+                type="text"
+                min="0"
+                label="Item Name"
+                require
+              />
+            </div>
+            <div class="q-pa-lg">
               <div>
                 <q-btn
                   type="submit"
@@ -82,8 +79,10 @@ export default {
   data() {
     return {
       inputData: {
-        official_id: "",
-        fullname: "",
+        item_code: "",
+        item_name: "",
+        item_price: "",
+        item_units: "",
       },
     };
   },

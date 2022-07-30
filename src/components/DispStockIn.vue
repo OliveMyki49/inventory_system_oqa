@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      title="Opening Stock"
+      title="Stock In"
       :loading="loading"
       :rows="rows"
       :columns="columns"
@@ -43,12 +43,12 @@
               class="bg-secondary text-white"
               @click="
                 selectItem(
+                  props.row.si_id,
                   props.row.op_id,
                   props.row.item_code,
-                  props.row.item_name,
-                  props.row.item_price,
-                  props.row.item_units
-                )
+                  props.row.units
+                );
+                getDataOS();
               "
             >
               <q-tooltip> edit </q-tooltip>
@@ -60,7 +60,7 @@
               size="md"
               class="bg-red text-white"
               @click="
-                this.del_item_id = props.row.op_id;
+                this.del_item_id = props.row.si_id;
                 this.del_item_name = props.row.item_name;
                 alert = true;
               "
@@ -96,10 +96,11 @@
       :maximized="maximizedToggle"
       transition-show="slide-up"
       transition-hide="slide-down"
+      full-width
     >
-      <q-card class="bg-white q-card" style="width: 400px">
+      <q-card class="bg-white q-card" style="width: 800px">
         <q-bar class="bg-primary text-white q-bar">
-          <div class="text-h6 text-uppercase">Update Item</div>
+          <div class="text-h6 text-uppercase">Update Item Form</div>
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
             <q-tooltip class="bg-white text-primary">Close</q-tooltip>
@@ -108,61 +109,83 @@
 
         <q-card-section class="q-pt-none">
           <q-form @submit.prevent="uptItem" class="q-gutter-md">
-            <div class="q-pa-lg q-gutter-md">
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_code"
-                type="text"
-                min="0"
-                label="Item Code"
-                require
-              />
-
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_name"
-                type="text"
-                min="0"
-                label="Item Name"
-                require
-              />
-
-              <q-input
-                filled
-                v-model="inputData.item_price"
-                label="Item Price"
-                mask="#.##"
-                fill-mask="0"
-                reverse-fill-mask
-                input-class="text-right"
-                require
-              />
-
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_units"
-                type="number"
-                min="0"
-                label="Item Units"
-                require
-              />
-
-              <div class="col-12">
-                <div
-                  v-if="
-                    inputData.item_code != '' &&
-                    inputData.item_name != '' &&
-                    inputData.item_price != '' &&
-                    inputData.item_units != ''
-                  "
+            <div class="q-pa-lg row q-gutter-md">
+              <div class="col-7">
+                <q-table
+                  title="Opening Stock"
+                  :loading="loading"
+                  :rows="rowsOS"
+                  :columns="columnsOS"
+                  row-key="name"
+                  :filter="filterOS"
+                  binary-state-sort
                 >
-                  <div v-if="inputData.item_price != '0.00'">
+                  <template v-slot:top-right>
+                    <q-input
+                      borderless
+                      dense
+                      debounce="300"
+                      v-model="filter"
+                      placeholder="Search"
+                    >
+                      <template v-slot:append>
+                        <q-icon name="search" />
+                      </template>
+                    </q-input>
+                  </template>
+
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <q-td key="item_code" :props="props">
+                        {{ props.row.item_code }}</q-td
+                      >
+                      <q-td key="item_name" :props="props">
+                        {{ props.row.item_name }}</q-td
+                      >
+                      <q-td key="op_id" :props="props">
+                        <q-btn
+                          size="md"
+                          color="blue-6"
+                          icon="add"
+                          @click="
+                            inputData.op_id = props.row.op_id;
+                            inputData.item_code = props.row.item_code;
+                          "
+                        />
+                        <q-tooltip> Select Item </q-tooltip>
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+              <div class="col-4 q-gutter-sm">
+                <q-input
+                  square
+                  filled
+                  clearable
+                  v-model="inputData.item_code"
+                  type="text"
+                  min="0"
+                  label="Item Code"
+                  require
+                  disable
+                />
+
+                <q-input
+                  square
+                  filled
+                  clearable
+                  v-model="inputData.units"
+                  type="number"
+                  min="0"
+                  label="Item Units"
+                  require
+                />
+
+                <div>
+                  <div
+                    v-if="inputData.item_code != '' && inputData.units != ''"
+                  >
                     <q-btn
                       type="submit"
                       unelevated
@@ -182,16 +205,6 @@
                       disable
                     />
                   </div>
-                </div>
-                <div v-else>
-                  <q-btn
-                    unelevated
-                    color="blue-9"
-                    size="lg"
-                    class="full-width"
-                    label="Update Item"
-                    disable
-                  />
                 </div>
               </div>
             </div>
@@ -282,17 +295,44 @@ const columns = [
 ];
 const rows = ref([{}]); //container for table data
 
+const columnsOS = [
+  {
+    name: "item_code",
+    required: true,
+    align: "left",
+    label: "Item Code",
+    field: "item_code",
+    sortable: true,
+  },
+  {
+    name: "item_name",
+    required: true,
+    align: "left",
+    label: "Item Name",
+    field: "item_name",
+    sortable: true,
+  },
+  {
+    name: "op_id",
+    required: true,
+    align: "left",
+    label: "",
+    field: "op_id",
+    sortable: true,
+  },
+];
+const rowsOS = ref([{}]); //container for table data
+
 export default {
   name: "DispStockIn",
 
   data() {
     return {
       inputData: {
+        si_id: "",
         op_id: "",
         item_code: "",
-        item_name: "",
-        item_price: "",
-        item_units: "",
+        units: "",
       },
 
       del_item_id: "",
@@ -307,6 +347,10 @@ export default {
       columns,
       rows,
 
+      filterOS: ref(""),
+      columnsOS,
+      rowsOS,
+
       dialog: ref(false),
       maximizedToggle: ref(false),
 
@@ -314,54 +358,63 @@ export default {
     };
   },
 
-  components: {},
-
   methods: {
     async uptItem() {
       const response = await api.put(
-        "update_opening_stock.php?op_id=" + this.inputData.op_id,
+        "update_stock_in.php?si_id=" + this.inputData.si_id,
         {
-          d1: this.inputData.item_code,
-          d2: this.inputData.item_name,
-          d3: this.inputData.item_price,
-          d4: this.inputData.item_units,
+          d1: this.inputData.op_id,
+          d2: this.inputData.units,
         }
       );
 
       //alert(response.data.msg);
       this.getData();
 
-      this.inputData.item_code = "";
-      this.inputData.item_name = "";
-      this.inputData.item_price = "";
-      this.inputData.item_units = "";
+      this.inputData.op_id = "";
+      this.inputData.units = "";
 
       this.dialog = false; //close dialog box
     },
 
-    remove(op_id) {
-      api.delete("delete_opening_stock.php?op_id=" + op_id).then((response) => {
+    remove(si_id) {
+      api.delete("delete_stock_in.php?si_id=" + si_id).then((response) => {
         //alert(response.data.msg);
         this.getData();
 
         this.alert = false; //close alert
       });
     },
-    selectItem(op_id, item_code, item_name, item_price, item_units) {
+
+    selectItem(si_id, op_id, item_code, units) {
+      this.inputData.si_id = si_id;
       this.inputData.op_id = op_id;
       this.inputData.item_code = item_code;
-      this.inputData.item_name = item_name;
-      this.inputData.item_price = item_price;
-      this.inputData.item_units = item_units;
+      this.inputData.units = units;
+
+      this.getDataOS();
 
       this.dialog = true;
     },
+
     getData() {
       //get all data from database
       api
         .get("disp_stock_in.php")
         .then((response) => {
           rows.value = response.data.arraydata;
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    },
+
+    getDataOS() {
+      //get all data from database
+      api
+        .get("disp_opening_stock.php")
+        .then((response) => {
+          rowsOS.value = response.data.arraydata;
         })
         .finally(() => {
           loading.value = false;

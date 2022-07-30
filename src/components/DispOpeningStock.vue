@@ -100,7 +100,7 @@
     >
       <q-card class="bg-white q-card" style="width: 400px">
         <q-bar class="bg-primary text-white q-bar">
-          <div class="text-h6 text-uppercase">Update Item</div>
+          <div class="text-h6 text-uppercase">Update Item Form</div>
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
             <q-tooltip class="bg-white text-primary">Close</q-tooltip>
@@ -215,7 +215,7 @@ const loading = ref(true); //loading bar
 // item_units
 const columns = [
   {
-    name: "si_id",
+    name: "op_id",
     required: true,
     align: "left",
     label: "Id",
@@ -347,6 +347,7 @@ export default {
         this.alert = false; //close alert
       });
     },
+
     selectItem(op_id, item_code, item_name, item_price, item_units) {
       this.inputData.op_id = op_id;
       this.inputData.item_code = item_code;
@@ -356,6 +357,7 @@ export default {
 
       this.dialog = true;
     },
+
     getData() {
       //get all data from database
       api

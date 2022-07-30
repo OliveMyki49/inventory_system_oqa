@@ -5,7 +5,8 @@
       color="primary"
       rounded
       @click="dialog = true"
-      ><q-icon left size="2em" name="person_add_alt" />
+    >
+      <!-- <q-icon left size="2em" name="person_add_alt" /> -->
       <label>Add New Item</label>
     </q-btn>
 
@@ -126,7 +127,7 @@ import { ref } from "vue";
 import { api } from "boot/axios"; //use this when you want api baseurl and axios is set in the boot
 
 export default {
-  name: "AddStockIn",
+  name: "AddOpeningStock",
 
   data() {
     return {
@@ -155,7 +156,7 @@ export default {
         d4: this.inputData.item_units,
       });
 
-      alert(response.data.msg);
+      //alert(response.data.msg);
       this.$emit("rerender-table");
 
       this.inputData.item_code = "";

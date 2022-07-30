@@ -5,7 +5,8 @@
       color="primary"
       rounded
       @click="dialog = true"
-      ><q-icon left size="2em" name="person_add_alt" />
+    >
+      <!-- <q-icon left size="2em" name="person_add_alt" /> -->
       <label>Add New Item</label>
     </q-btn>
 
@@ -15,8 +16,9 @@
       :maximized="maximizedToggle"
       transition-show="slide-up"
       transition-hide="slide-down"
+      full-width
     >
-      <q-card class="bg-white q-card" style="width: 400px">
+      <q-card class="bg-white q-card" style="width: 800px">
         <q-bar class="bg-primary text-white q-bar">
           <div class="text-h6 text-uppercase">Add Item</div>
           <q-space />
@@ -27,61 +29,83 @@
 
         <q-card-section class="q-pt-none">
           <q-form @submit.prevent="addItem" class="q-gutter-md">
-            <div class="q-pa-lg q-gutter-md">
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_code"
-                type="text"
-                min="0"
-                label="Item Code"
-                require
-              />
-
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_name"
-                type="text"
-                min="0"
-                label="Item Name"
-                require
-              />
-
-              <q-input
-                filled
-                v-model="inputData.item_price"
-                label="Item Price"
-                mask="#.##"
-                fill-mask="0"
-                reverse-fill-mask
-                input-class="text-right"
-                require
-              />
-
-              <q-input
-                square
-                filled
-                clearable
-                v-model="inputData.item_units"
-                type="number"
-                min="0"
-                label="Item Units"
-                require
-              />
-
-              <div class="col-12">
-                <div
-                  v-if="
-                    inputData.item_code != '' &&
-                    inputData.item_name != '' &&
-                    inputData.item_price != '' &&
-                    inputData.item_units != ''
-                  "
+            <div class="q-pa-lg row q-gutter-md">
+              <div class="col-7">
+                <q-table
+                  title="Opening Stock"
+                  :loading="loading"
+                  :rows="rows"
+                  :columns="columns"
+                  row-key="name"
+                  :filter="filter"
+                  binary-state-sort
                 >
-                  <div v-if="inputData.item_price != '0.00'">
+                  <template v-slot:top-right>
+                    <q-input
+                      borderless
+                      dense
+                      debounce="300"
+                      v-model="filter"
+                      placeholder="Search"
+                    >
+                      <template v-slot:append>
+                        <q-icon name="search" />
+                      </template>
+                    </q-input>
+                  </template>
+
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <q-td key="item_code" :props="props">
+                        {{ props.row.item_code }}</q-td
+                      >
+                      <q-td key="item_name" :props="props">
+                        {{ props.row.item_name }}</q-td
+                      >
+                      <q-td key="op_id" :props="props">
+                        <q-btn
+                          size="md"
+                          color="blue-6"
+                          icon="add"
+                          @click="
+                            inputData.op_id = props.row.op_id;
+                            inputData.item_code = props.row.item_code;
+                          "
+                        />
+                        <q-tooltip> Select Item </q-tooltip>
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
+              <div class="col-4 q-gutter-sm">
+                <q-input
+                  square
+                  filled
+                  clearable
+                  v-model="inputData.item_code"
+                  type="text"
+                  min="0"
+                  label="Item Code"
+                  require
+                  disable
+                />
+
+                <q-input
+                  square
+                  filled
+                  clearable
+                  v-model="inputData.units"
+                  type="number"
+                  min="0"
+                  label="Item Units"
+                  require
+                />
+
+                <div>
+                  <div
+                    v-if="inputData.item_code != '' && inputData.units != ''"
+                  >
                     <q-btn
                       type="submit"
                       unelevated
@@ -102,16 +126,6 @@
                     />
                   </div>
                 </div>
-                <div v-else>
-                  <q-btn
-                    unelevated
-                    color="blue-9"
-                    size="lg"
-                    class="full-width"
-                    label="Add Item"
-                    disable
-                  />
-                </div>
               </div>
             </div>
           </q-form>
@@ -125,46 +139,106 @@
 import { ref } from "vue";
 import { api } from "boot/axios"; //use this when you want api baseurl and axios is set in the boot
 
+const loading = ref(true); //loading bar
+const columns = [
+  {
+    name: "item_code",
+    required: true,
+    align: "left",
+    label: "Item Code",
+    field: "item_code",
+    sortable: true,
+  },
+  {
+    name: "item_name",
+    required: true,
+    align: "left",
+    label: "Item Name",
+    field: "item_name",
+    sortable: true,
+  },
+  {
+    name: "op_id",
+    required: true,
+    align: "left",
+    label: "",
+    field: "op_id",
+    sortable: true,
+  },
+];
+const rows = ref([{}]); //container for table data
+
 export default {
   name: "AddStockIn",
 
   data() {
     return {
       inputData: {
+        op_id: "",
         item_code: "",
-        item_name: "",
-        item_price: "",
-        item_units: "",
+        units: "",
       },
     };
   },
 
   setup() {
     return {
+      filter: ref(""),
+      loading,
+      columns,
+      rows,
+
       dialog: ref(false),
       maximizedToggle: ref(false),
     };
   },
 
   methods: {
+    currentDate() {
+      let timestamp = Date.now();
+      let d = new Date(timestamp);
+      let current_date =
+        d.getFullYear() +
+        "-" +
+        ("00" + (d.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("00" + d.getDate()).slice(-2);
+
+      return current_date;
+    },
+
+    getData() {
+      //get all data from database
+      api
+        .get("disp_opening_stock.php")
+        .then((response) => {
+          rows.value = response.data.arraydata;
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    },
+
     async addItem() {
-      const response = await api.post("add_opening_stock.php", {
-        d1: this.inputData.item_code,
-        d2: this.inputData.item_name,
-        d3: this.inputData.item_price,
-        d4: this.inputData.item_units,
+      const response = await api.post("add_stock_in.php", {
+        d1: this.inputData.op_id,
+        d2: this.inputData.units,
+        d3: this.currentDate(),
       });
 
-      alert(response.data.msg);
+      //alert(response.data.msg);
       this.$emit("rerender-table");
 
+      this.inputData.op_id = "";
       this.inputData.item_code = "";
-      this.inputData.item_name = "";
-      this.inputData.item_price = "";
-      this.inputData.item_units = "";
+      this.inputData.units = "";
 
       this.dialog = false; //close dialog box
     },
+  },
+
+  beforeMount: function () {
+    this.getData();
   },
 };
 </script>

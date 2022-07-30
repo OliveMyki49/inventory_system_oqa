@@ -60,19 +60,19 @@ const linksList = [
     title: "Purchases / Stock In",
     caption: "",
     icon: "payments",
-    link: "/#/dashboard",
+    link: "/#/stockin",
   },
   {
     title: "Sales / Stock Out",
     caption: "",
     icon: "real_estate_agent",
-    link: "/#/dashboard",
+    link: "/#/stockout",
   },
   {
     title: "Current Status of Stock",
     caption: "",
     icon: "system_update_alt",
-    link: "/#/dashboard",
+    link: "/#/currentstatus",
   },
 ];
 

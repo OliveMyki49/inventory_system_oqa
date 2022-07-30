@@ -25,15 +25,17 @@
 
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="op_id" :props="props"> {{ props.row.op_id }}</q-td>
+          <q-td key="si_id" :props="props"> {{ props.row.si_id }}</q-td>
           <q-td key="item_code" :props="props"> {{ props.row.item_code }}</q-td>
           <q-td key="item_name" :props="props"> {{ props.row.item_name }}</q-td>
           <q-td key="item_price" :props="props">
             {{ props.row.item_price }}</q-td
           >
-          <q-td key="item_units" :props="props">
-            {{ props.row.item_units }}</q-td
-          >
+          <q-td key="units" :props="props"> {{ props.row.units }}</q-td>
+
+          <q-td key="op_id" :props="props">
+            {{ props.row.item_price * props.row.units }}
+          </q-td>
           <q-td key="op_id" :props="props">
             <q-btn
               icon="edit"
@@ -205,14 +207,15 @@ import { ref } from "vue";
 import { api } from "boot/axios"; //use this when you want api baseurl and axios is set in the boot
 
 const loading = ref(true); //loading bar
+// si_id
 // op_id
 // item_code
 // item_name
 // item_price
-// item_units
+// units
 const columns = [
   {
-    name: "op_id",
+    name: "si_id",
     required: true,
     align: "left",
     label: "Id",
@@ -245,11 +248,19 @@ const columns = [
     sortable: true,
   },
   {
-    name: "item_units",
+    name: "units",
     required: true,
     align: "left",
     label: "Item Units",
-    field: "item_units",
+    field: "units",
+    sortable: true,
+  },
+  {
+    name: "op_id",
+    required: true,
+    align: "left",
+    label: "Total Stock Value",
+    field: "op_id",
     sortable: true,
   },
   {
@@ -272,7 +283,7 @@ const columns = [
 const rows = ref([{}]); //container for table data
 
 export default {
-  name: "DispOpeningStock",
+  name: "DispStockIn",
 
   data() {
     return {
@@ -348,7 +359,7 @@ export default {
     getData() {
       //get all data from database
       api
-        .get("disp_opening_stock.php")
+        .get("disp_stock_in.php")
         .then((response) => {
           rows.value = response.data.arraydata;
         })

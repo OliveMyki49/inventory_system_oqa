@@ -35,6 +35,9 @@
             {{ props.row.item_units }}</q-td
           >
           <q-td key="op_id" :props="props">
+            {{ props.row.item_price * props.row.item_units }}
+          </q-td>
+          <q-td key="op_id" :props="props">
             <q-btn
               icon="edit"
               size="md"
@@ -212,7 +215,7 @@ const loading = ref(true); //loading bar
 // item_units
 const columns = [
   {
-    name: "op_id",
+    name: "si_id",
     required: true,
     align: "left",
     label: "Id",
@@ -250,6 +253,14 @@ const columns = [
     align: "left",
     label: "Item Units",
     field: "item_units",
+    sortable: true,
+  },
+  {
+    name: "op_id",
+    required: true,
+    align: "left",
+    label: "Total Stock Value",
+    field: "op_id",
     sortable: true,
   },
   {

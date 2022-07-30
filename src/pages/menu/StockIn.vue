@@ -1,17 +1,11 @@
-<template>
-  <AddStockIn />
-</template>
+<template>Sampler stockin</template>
 
 <script>
-import AddStockIn from "components/AddStockIn.vue";
-
 export default {
   name: "OpeningStock",
 
   setup() {},
 
-  components: {
-    AddStockIn,
-  },
+  components: {},
 };
 </script>

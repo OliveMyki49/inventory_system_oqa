@@ -13,6 +13,9 @@ const routes = [
       {
         path: "/dashboard",
         component: () => import("pages/menu/OpeningStock.vue"),
+        component: () => import("pages/menu/StockIn.vue"),
+        component: () => import("pages/menu/StockOut.vue"),
+        component: () => import("pages/menu/CurrentStatus.vue"),
       },
     ],
   },

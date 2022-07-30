@@ -1,4 +1,4 @@
-<template>Sampler</template>
+<template>Stockout</template>
 
 <script>
 export default {

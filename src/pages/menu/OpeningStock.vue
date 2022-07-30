@@ -1,19 +1,30 @@
 <template>
-  <AddStockIn />
-  <DispOpeningStock />
+  <DispOpeningStock :key="rerender" />
+  <AddOpeningStock @rerender-table="rerenderTable" />
 </template>
 
 <script>
-import AddStockIn from "components/AddStockIn.vue";
+import AddOpeningStock from "src/components/AddOpeningStock.vue";
 import DispOpeningStock from "components/DispOpeningStock.vue";
 
 export default {
   name: "OpeningStock",
-  setup() {},
+
+  data() {
+    return {
+      rerender: 0,
+    };
+  },
 
   components: {
-    AddStockIn,
+    AddOpeningStock,
     DispOpeningStock,
+  },
+
+  methods: {
+    rerenderTable() {
+      this.rerender += 1;
+    },
   },
 };
 </script>

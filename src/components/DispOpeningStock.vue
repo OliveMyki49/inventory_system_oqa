@@ -9,6 +9,18 @@
       :filter="filter"
       binary-state-sort
     >
+      <template v-slot:top-left>
+        <span class="text-h6">Opening Stock</span>
+        &nbsp;
+        <span class="bg-blue-6 text-white q-pa-sm">
+          Total Units: {{ totalUnits }}
+        </span>
+        &nbsp;
+        <span class="bg-blue-6 text-white q-pa-sm">
+          Total Stock Value: ₱ {{ totalStockValue }}
+        </span>
+      </template>
+
       <template v-slot:top-right>
         <q-input
           borderless
@@ -297,6 +309,9 @@ export default {
 
       del_item_id: "",
       del_item_name: "",
+
+      totalUnits: "",
+      totalStockValue: "",
     };
   },
 
@@ -364,6 +379,8 @@ export default {
         .get("disp_opening_stock.php")
         .then((response) => {
           rows.value = response.data.arraydata;
+          this.totalUnits = response.data.totalUnits;
+          this.totalStockValue = response.data.totalStockValue;
         })
         .finally(() => {
           loading.value = false;

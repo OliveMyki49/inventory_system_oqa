@@ -29,13 +29,13 @@
           <q-td key="item_code" :props="props"> {{ props.row.item_code }}</q-td>
           <q-td key="item_name" :props="props"> {{ props.row.item_name }}</q-td>
           <q-td key="item_price" :props="props">
-            {{ props.row.item_price }}</q-td
+            ₱ {{ props.row.item_price }}</q-td
           >
           <q-td key="item_units" :props="props">
             {{ props.row.item_units }}</q-td
           >
           <q-td key="op_id" :props="props">
-            {{ props.row.item_price * props.row.item_units }}
+            ₱ {{ props.row.item_price * props.row.item_units }}
           </q-td>
           <q-td key="op_id" :props="props">
             <q-btn
@@ -243,7 +243,7 @@ const columns = [
     name: "item_price",
     required: true,
     align: "left",
-    label: "Item Price",
+    label: "Price / Unit",
     field: "item_price",
     sortable: true,
   },
@@ -251,7 +251,7 @@ const columns = [
     name: "item_units",
     required: true,
     align: "left",
-    label: "Item Units",
+    label: "Units",
     field: "item_units",
     sortable: true,
   },

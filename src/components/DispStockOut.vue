@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      title="Stock In"
+      title="Stock Out"
       :loading="loading"
       :rows="rows"
       :columns="columns"
@@ -25,7 +25,7 @@
 
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="si_id" :props="props"> {{ props.row.si_id }}</q-td>
+          <q-td key="so_id" :props="props"> {{ props.row.so_id }}</q-td>
           <q-td key="date" :props="props"> {{ props.row.date }}</q-td>
           <q-td key="item_code" :props="props"> {{ props.row.item_code }}</q-td>
           <q-td key="item_name" :props="props"> {{ props.row.item_name }}</q-td>
@@ -44,7 +44,7 @@
               class="bg-secondary text-white"
               @click="
                 selectItem(
-                  props.row.si_id,
+                  props.row.so_id,
                   props.row.op_id,
                   props.row.item_code,
                   props.row.units
@@ -61,7 +61,7 @@
               size="md"
               class="bg-red text-white"
               @click="
-                this.del_item_id = props.row.si_id;
+                this.del_item_id = props.row.so_id;
                 this.del_item_name = props.row.item_name;
                 alert = true;
               "
@@ -221,15 +221,9 @@ import { ref } from "vue";
 import { api } from "boot/axios"; //use this when you want api baseurl and axios is set in the boot
 
 const loading = ref(true); //loading bar
-// si_id
-// op_id
-// item_code
-// item_name
-// item_price
-// units
 const columns = [
   {
-    name: "si_id",
+    name: "so_id",
     required: true,
     align: "left",
     label: "Id",
@@ -333,12 +327,12 @@ const columnsOS = [
 const rowsOS = ref([{}]); //container for table data
 
 export default {
-  name: "DispStockIn",
+  name: "DispStockOut",
 
   data() {
     return {
       inputData: {
-        si_id: "",
+        so_id: "",
         op_id: "",
         item_code: "",
         units: "",
@@ -370,7 +364,7 @@ export default {
   methods: {
     async uptItem() {
       const response = await api.put(
-        "update_stock_in.php?si_id=" + this.inputData.si_id,
+        "update_stock_out.php?so_id=" + this.inputData.so_id,
         {
           d1: this.inputData.op_id,
           d2: this.inputData.units,
@@ -386,8 +380,8 @@ export default {
       this.dialog = false; //close dialog box
     },
 
-    remove(si_id) {
-      api.delete("delete_stock_in.php?si_id=" + si_id).then((response) => {
+    remove(so_id) {
+      api.delete("delete_stock_out.php?so_id=" + so_id).then((response) => {
         //alert(response.data.msg);
         this.getData();
 
@@ -395,8 +389,8 @@ export default {
       });
     },
 
-    selectItem(si_id, op_id, item_code, units) {
-      this.inputData.si_id = si_id;
+    selectItem(so_id, op_id, item_code, units) {
+      this.inputData.so_id = so_id;
       this.inputData.op_id = op_id;
       this.inputData.item_code = item_code;
       this.inputData.units = units;
@@ -409,7 +403,7 @@ export default {
     getData() {
       //get all data from database
       api
-        .get("disp_stock_in.php")
+        .get("disp_stock_out.php")
         .then((response) => {
           rows.value = response.data.arraydata;
         })

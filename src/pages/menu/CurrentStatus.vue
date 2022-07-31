@@ -1,8 +1,15 @@
-<template>Sampler</template>
+<template>
+  <DispCurrentStatus />
+</template>
 
 <script>
+import DispCurrentStatus from "components/DispCurrentStatus.vue";
+
 export default {
-  name: "OpeningStock",
-  setup() {},
+  name: "CurrentStatus",
+
+  components: {
+    DispCurrentStatus,
+  },
 };
 </script>

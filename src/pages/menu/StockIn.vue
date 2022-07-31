@@ -8,7 +8,7 @@ import DispStockIn from "components/DispStockIn.vue";
 import AddStockIn from "components/AddStockIn.vue";
 
 export default {
-  name: "OpeningStock",
+  name: "StockIn",
 
   data() {
     return {
